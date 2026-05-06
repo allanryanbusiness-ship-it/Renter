@@ -1,0 +1,370 @@
+:root {
+  --bg: #0a1020;
+  --bg-accent: #101b36;
+  --panel: rgba(10, 16, 32, 0.88);
+  --panel-strong: rgba(13, 20, 40, 0.96);
+  --line: rgba(154, 178, 255, 0.18);
+  --text: #f4f7fb;
+  --muted: #98a4c5;
+  --blue: #5cb7ff;
+  --teal: #62f5d2;
+  --gold: #f5d372;
+  --rose: #ff8a8a;
+  --success: #7effa9;
+  --shadow: 0 24px 90px rgba(0, 0, 0, 0.36);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(92, 183, 255, 0.2), transparent 30%),
+    radial-gradient(circle at top right, rgba(98, 245, 210, 0.18), transparent 28%),
+    linear-gradient(180deg, #08101f 0%, #0b1224 55%, #090f1b 100%);
+  color: var(--text);
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+h1,
+h2,
+h3,
+th {
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  letter-spacing: -0.03em;
+}
+
+a {
+  color: inherit;
+}
+
+.dashboard-shell {
+  width: min(1600px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 28px 0 40px;
+  display: grid;
+  gap: 20px;
+}
+
+.panel {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(15, 22, 45, 0.95), rgba(9, 15, 31, 0.9));
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(130deg, rgba(92, 183, 255, 0.08), transparent 40%, rgba(98, 245, 210, 0.07));
+  pointer-events: none;
+}
+
+.hero-panel,
+.board-panel,
+.cards-panel,
+.table-panel,
+.filters-panel {
+  padding: 24px;
+}
+
+.hero-panel {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.hero-copy h1 {
+  margin: 0 0 12px;
+  font-size: clamp(2.4rem, 5vw, 4.25rem);
+  line-height: 0.96;
+  max-width: 12ch;
+}
+
+.hero-text,
+.section-caption,
+label,
+input,
+textarea,
+select,
+td {
+  font-size: 0.96rem;
+}
+
+.hero-text,
+.section-caption,
+.empty-state p {
+  color: var(--muted);
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--teal);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.78rem;
+}
+
+.hero-stats {
+  display: grid;
+  gap: 12px;
+}
+
+.stat-card,
+.ranking-card,
+.listing-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 16px;
+  backdrop-filter: blur(12px);
+}
+
+.stat-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 1.9rem;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.panel-header,
+.section-header,
+.listing-card-top,
+.card-meta,
+.comparison-link,
+.ranking-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.panel-header h2,
+.section-header h2,
+.listing-card h3,
+.ranking-card h3 {
+  margin: 0;
+}
+
+.pill,
+.badge,
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.badge.score {
+  background: rgba(126, 255, 169, 0.12);
+  border-color: rgba(126, 255, 169, 0.28);
+  color: var(--success);
+}
+
+.badge.watch-tour {
+  color: var(--gold);
+}
+
+.stack-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.split-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.checkbox-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+}
+
+input,
+textarea,
+select,
+button {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: rgba(7, 12, 24, 0.94);
+  color: var(--text);
+  font: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid rgba(92, 183, 255, 0.45);
+  border-color: rgba(92, 183, 255, 0.55);
+}
+
+button {
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.button-primary {
+  background: linear-gradient(135deg, rgba(92, 183, 255, 0.26), rgba(98, 245, 210, 0.18));
+}
+
+.button-secondary {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 18px 0;
+}
+
+.ranking-grid,
+.cards-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.ranking-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cards-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ranking-card .rank {
+  font-size: 2.4rem;
+  line-height: 1;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  color: var(--gold);
+}
+
+.metric-row,
+.signal-row,
+.notes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.metric-row span,
+.signal-row span,
+.notes-list span {
+  padding: 7px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+}
+
+.listing-card p,
+.ranking-card p {
+  color: var(--muted);
+}
+
+.source-badge {
+  color: var(--blue);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 18px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1100px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.empty-state {
+  padding: 32px;
+  text-align: center;
+}
+
+@media (max-width: 1180px) {
+  .hero-panel,
+  .control-grid,
+  .ranking-grid,
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard-shell {
+    width: min(100vw - 20px, 1600px);
+    padding-top: 14px;
+  }
+
+  .split-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-panel,
+  .board-panel,
+  .cards-panel,
+  .table-panel,
+  .filters-panel {
+    padding: 18px;
+  }
+}
+

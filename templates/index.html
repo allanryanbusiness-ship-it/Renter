@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}" />
+  </head>
+  <body>
+    <main class="dashboard-shell">
+      <section class="hero-panel panel">
+        <div class="hero-copy">
+          <p class="eyebrow">Orange County rental command center</p>
+          <h1>Compare family-size rentals in one dark-mode workspace.</h1>
+          <p class="hero-text">
+            Aggregate listings, normalize tradeoffs, rank the best deals, and
+            keep a manual fallback when source automation is unavailable.
+          </p>
+        </div>
+        <div class="hero-stats" id="hero-stats"></div>
+      </section>
+
+      <section class="control-grid">
+        <aside class="panel filters-panel">
+          <div class="panel-header">
+            <h2>Search Criteria</h2>
+            <span class="pill">Saved to SQLite</span>
+          </div>
+          <form id="criteria-form" class="stack-form">
+            <label>
+              County
+              <input type="text" name="county" />
+            </label>
+            <label>
+              Preferred city
+              <input type="text" name="city" placeholder="Any city" />
+            </label>
+            <div class="split-fields">
+              <label>
+                Min bedrooms
+                <input type="number" name="min_bedrooms" min="0" />
+              </label>
+              <label>
+                Min bathrooms
+                <input type="number" name="min_bathrooms" min="0" step="0.5" />
+              </label>
+            </div>
+            <div class="split-fields">
+              <label>
+                Max price
+                <input type="number" name="max_price" min="0" step="50" />
+              </label>
+              <label>
+                Min sqft
+                <input type="number" name="min_sqft" min="0" step="50" />
+              </label>
+            </div>
+            <div class="checkbox-row">
+              <label><input type="checkbox" name="require_backyard" /> Backyard required</label>
+              <label><input type="checkbox" name="require_garage" /> Garage required</label>
+              <label><input type="checkbox" name="pets_required" /> Pets-friendly only</label>
+            </div>
+            <label>
+              Notes
+              <textarea name="notes" rows="3"></textarea>
+            </label>
+            <button type="submit" class="button-primary">Save Criteria</button>
+          </form>
+        </aside>
+
+        <aside class="panel filters-panel">
+          <div class="panel-header">
+            <h2>View Controls</h2>
+            <span class="pill">Server-backed filters</span>
+          </div>
+          <form id="filter-form" class="stack-form">
+            <label>
+              City
+              <select name="city">
+                <option value="">All Orange County</option>
+              </select>
+            </label>
+            <div class="split-fields">
+              <label>
+                Min bedrooms
+                <input type="number" name="min_bedrooms" min="0" />
+              </label>
+              <label>
+                Sort by
+                <select name="sort_by">
+                  <option value="best_deal">Best deal</option>
+                  <option value="price_asc">Lowest price</option>
+                  <option value="space_desc">Most space</option>
+                  <option value="newest">Newest</option>
+                </select>
+              </label>
+            </div>
+            <div class="checkbox-row">
+              <label><input type="checkbox" name="require_backyard" /> Backyard</label>
+              <label><input type="checkbox" name="require_garage" /> Garage</label>
+              <label><input type="checkbox" name="pets_required" /> Pets</label>
+            </div>
+            <button type="submit" class="button-secondary">Refresh Listings</button>
+          </form>
+
+          <div class="divider"></div>
+
+          <div class="panel-header">
+            <h2>Manual Add</h2>
+            <span class="pill">Fallback path</span>
+          </div>
+          <form id="manual-form" class="stack-form">
+            <label>
+              Title
+              <input type="text" name="title" required />
+            </label>
+            <label>
+              Listing URL
+              <input type="url" name="listing_url" placeholder="https://..." />
+            </label>
+            <div class="split-fields">
+              <label>
+                City
+                <input type="text" name="city" required />
+              </label>
+              <label>
+                Neighborhood
+                <input type="text" name="neighborhood" />
+              </label>
+            </div>
+            <div class="split-fields">
+              <label>
+                Price
+                <input type="number" name="price" min="0" step="50" required />
+              </label>
+              <label>
+                Sqft
+                <input type="number" name="square_feet" min="0" step="10" />
+              </label>
+            </div>
+            <div class="split-fields">
+              <label>
+                Bedrooms
+                <input type="number" name="bedrooms" min="0" required />
+              </label>
+              <label>
+                Bathrooms
+                <input type="number" name="bathrooms" min="0" step="0.5" required />
+              </label>
+            </div>
+            <div class="checkbox-row">
+              <label><input type="checkbox" name="has_backyard" /> Backyard</label>
+              <label><input type="checkbox" name="has_garage" /> Garage</label>
+              <label><input type="checkbox" name="pets_allowed" /> Pets allowed</label>
+            </div>
+            <label>
+              Notes
+              <textarea name="note" rows="3" placeholder="Paste highlights, concerns, or source context."></textarea>
+            </label>
+            <button type="submit" class="button-primary">Add Manual Listing</button>
+          </form>
+        </aside>
+      </section>
+
+      <section class="panel board-panel">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Deal ranking</p>
+            <h2>Best-matching rentals</h2>
+          </div>
+          <p class="section-caption" id="board-summary">Loading listings...</p>
+        </div>
+        <div class="ranking-grid" id="ranking-grid"></div>
+      </section>
+
+      <section class="panel cards-panel">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Property cards</p>
+            <h2>Listing stack</h2>
+          </div>
+          <p class="section-caption">Score, source, notes, and must-have signals in one glance.</p>
+        </div>
+        <div class="cards-grid" id="cards-grid"></div>
+      </section>
+
+      <section class="panel table-panel">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Comparison matrix</p>
+            <h2>Decision table</h2>
+          </div>
+          <p class="section-caption">Use this to compare tradeoffs before shortlisting or touring.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Listing</th>
+                <th>Price</th>
+                <th>Bed/Bath</th>
+                <th>Sqft</th>
+                <th>City</th>
+                <th>Neighborhood</th>
+                <th>Backyard</th>
+                <th>Garage</th>
+                <th>Pets</th>
+                <th>Source</th>
+                <th>Watch</th>
+              </tr>
+            </thead>
+            <tbody id="comparison-table"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <template id="empty-state-template">
+      <div class="empty-state">
+        <h3>No listings match the current filters.</h3>
+        <p>Broaden the criteria or add a manual listing to keep comparison momentum.</p>
+      </div>
+    </template>
+
+    <script src="{{ url_for('static', path='js/app.js') }}" defer></script>
+  </body>
+</html>
+

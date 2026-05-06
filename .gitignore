@@ -1,0 +1,10 @@
+__pycache__/
+.pytest_cache/
+.venv/
+.ntm/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+data/renter.db
+data/*.db

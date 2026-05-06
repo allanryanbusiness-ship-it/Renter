@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "renter-dashboard"
+version = "0.1.0"
+description = "Southern California rental comparison dashboard MVP"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache License 2.0"}
+dependencies = [
+  "fastapi>=0.115.0,<1.0.0",
+  "jinja2>=3.1.4,<4.0.0",
+  "pydantic>=2.9.0,<3.0.0",
+  "sqlalchemy>=2.0.35,<3.0.0",
+  "uvicorn>=0.32.0,<1.0.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.setuptools.packages.find]
+include = ["app*"]
