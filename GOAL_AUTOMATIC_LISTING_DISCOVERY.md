@@ -1,3 +1,13 @@
+# Critical Instruction
+
+This is an implementation goal, not a documentation-only task.
+
+Do not stop after editing this markdown file.
+
+You must create working application code for the discovery layer, including backend routes, models, services, provider adapters, frontend UI, tests, and README updates.
+
+The goal is not complete until the app can run mock automatic discovery from the dashboard and import discovered listings into the existing scoring/review workflow.
+
 # Goal: Build Automatic Rental Listing Discovery
 
 You are working in an existing FastAPI rental property dashboard project.
