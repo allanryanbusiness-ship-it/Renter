@@ -20,6 +20,7 @@ The user lands on a fullscreen dashboard and immediately sees:
 - Property cards
 - Comparison table
 - Active search criteria
+- Automatic approved-provider discovery
 - Manual add form
 
 ### 2. Compare Listings
@@ -54,7 +55,17 @@ The app ranks properties using a weighted score composed of:
 - Listing freshness
 - Data confidence
 
-### 5. Recover When Scraping Fails
+### 5. Discover Provider Candidates
+
+The user can run approved/provider-based discovery to:
+
+- Import local approved-feed candidates immediately
+- Optionally run configured provider APIs
+- Preserve source provenance
+- Deduplicate exact source URLs
+- Score discovered listings automatically
+
+### 6. Recover When Scraping Fails
 
 If a source is blocked or unsupported, the user can:
 
@@ -69,4 +80,3 @@ If a source is blocked or unsupported, the user can:
 - Multi-user auth
 - Background schedulers
 - Full listing-change history diffing
-

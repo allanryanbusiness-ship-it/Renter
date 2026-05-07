@@ -1,0 +1,396 @@
+{
+  "_meta": {
+    "description": "Editable Orange County 3-bedroom rental benchmarks for deal scoring. Values are conservative research estimates, not guaranteed statistical medians.",
+    "schema_version": 2,
+    "last_reviewed": "2026-05-06",
+    "research_document": "MARKET_RESEARCH.md",
+    "county_fallback_key": "Orange County",
+    "important_warning": "Rental markets change frequently. Benchmarks should be reviewed before making rental decisions."
+  },
+  "Orange County": {
+    "city": "Orange County",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 3900,
+    "typical_low_3br": 3250,
+    "typical_high_3br": 4500,
+    "median_price_per_sqft": 2.89,
+    "typical_low_price_per_sqft": 2.3,
+    "typical_high_price_per_sqft": 3.7,
+    "benchmark_confidence": "fallback",
+    "data_source_type": "manual_research_synthesis",
+    "data_sources": [
+      {
+        "name": "Apartments.com city rent trend pages",
+        "url": "https://www.apartments.com/rent-market-trends/",
+        "accessed_at": "2026-05-06",
+        "notes": "Fallback synthesized from the 15 researched Orange County city 3BR rent trend values."
+      },
+      {
+        "name": "HUD USER Fair Market Rents",
+        "url": "https://www.huduser.gov/portal/datasets/fmr.html",
+        "accessed_at": "2026-05-06",
+        "notes": "County/metropolitan FMR context; not a private-market listing median."
+      },
+      {
+        "name": "fmr.fyi Santa Ana FY2026 SAFMR view",
+        "url": "https://fmr.fyi/city/santa-ana-ca",
+        "accessed_at": "2026-05-06",
+        "notes": "Provides FY2026 HUD SAFMR context and market-alignment ranges for one Orange County city."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "County fallback only. Prefer a city benchmark when available."
+  },
+  "Irvine": {
+    "city": "Irvine",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 4386,
+    "typical_low_3br": 3800,
+    "typical_high_3br": 5500,
+    "median_price_per_sqft": 3.35,
+    "typical_low_price_per_sqft": 2.9,
+    "typical_high_price_per_sqft": 4.1,
+    "benchmark_confidence": "medium",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Irvine rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/irvine-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $4,386 and average size of 1,309 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Apartment benchmark proxy; single-family homes with yards and garages can run higher."
+  },
+  "Costa Mesa": {
+    "city": "Costa Mesa",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 3359,
+    "typical_low_3br": 2900,
+    "typical_high_3br": 4400,
+    "median_price_per_sqft": 2.92,
+    "typical_low_price_per_sqft": 2.45,
+    "typical_high_price_per_sqft": 3.6,
+    "benchmark_confidence": "medium",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Costa Mesa rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/costa-mesa-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $3,359 and average size of 1,152 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Wide spread between apartment and beach-adjacent house rents; verify detached listings manually."
+  },
+  "Huntington Beach": {
+    "city": "Huntington Beach",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 4131,
+    "typical_low_3br": 3500,
+    "typical_high_3br": 5400,
+    "median_price_per_sqft": 3.21,
+    "typical_low_price_per_sqft": 2.7,
+    "typical_high_price_per_sqft": 4.05,
+    "benchmark_confidence": "medium",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Huntington Beach rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/huntington-beach-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $4,131 and average size of 1,287 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Beach proximity creates large variance; stronger listings near the coast may exceed the typical high range."
+  },
+  "Newport Beach": {
+    "city": "Newport Beach",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 5700,
+    "typical_low_3br": 4800,
+    "typical_high_3br": 7600,
+    "median_price_per_sqft": 3.96,
+    "typical_low_price_per_sqft": 3.25,
+    "typical_high_price_per_sqft": 5.1,
+    "benchmark_confidence": "medium",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Newport Beach rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/newport-beach-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $5,700 and average size of 1,440 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Luxury and coastal inventory creates very high variance; treat below-market signals as review triggers."
+  },
+  "Orange": {
+    "city": "Orange",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 3700,
+    "typical_low_3br": 3200,
+    "typical_high_3br": 4800,
+    "median_price_per_sqft": 2.82,
+    "typical_low_price_per_sqft": 2.35,
+    "typical_high_price_per_sqft": 3.55,
+    "benchmark_confidence": "medium",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Orange rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/orange-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $3,700 and average size of 1,312 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Good comparison point for central OC; verify neighborhood and school-area premiums."
+  },
+  "Anaheim": {
+    "city": "Anaheim",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 2988,
+    "typical_low_3br": 2600,
+    "typical_high_3br": 3900,
+    "median_price_per_sqft": 2.66,
+    "typical_low_price_per_sqft": 2.2,
+    "typical_high_price_per_sqft": 3.35,
+    "benchmark_confidence": "medium",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Anaheim rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/anaheim-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $2,988 and average size of 1,125 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Anaheim Hills and newer inventory can price well above city average."
+  },
+  "Tustin": {
+    "city": "Tustin",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 3598,
+    "typical_low_3br": 3100,
+    "typical_high_3br": 4700,
+    "median_price_per_sqft": 2.78,
+    "typical_low_price_per_sqft": 2.35,
+    "typical_high_price_per_sqft": 3.5,
+    "benchmark_confidence": "medium",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Tustin rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/tustin-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $3,598 and average size of 1,293 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Tustin Ranch and newer townhome inventory can sit above this apartment-derived baseline."
+  },
+  "Fullerton": {
+    "city": "Fullerton",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 3572,
+    "typical_low_3br": 3100,
+    "typical_high_3br": 4600,
+    "median_price_per_sqft": 2.89,
+    "typical_low_price_per_sqft": 2.4,
+    "typical_high_price_per_sqft": 3.6,
+    "benchmark_confidence": "medium",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Fullerton rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/fullerton-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $3,572 and average size of 1,235 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Single-family homes near premium school zones may be above this apartment-oriented benchmark."
+  },
+  "Mission Viejo": {
+    "city": "Mission Viejo",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 3924,
+    "typical_low_3br": 3400,
+    "typical_high_3br": 5300,
+    "median_price_per_sqft": 3.13,
+    "typical_low_price_per_sqft": 2.6,
+    "typical_high_price_per_sqft": 4.0,
+    "benchmark_confidence": "low",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Mission Viejo rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/mission-viejo-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $3,924 and average size of 1,253 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Benchmark confidence is low because target listings are often houses/townhomes rather than apartment units."
+  },
+  "Lake Forest": {
+    "city": "Lake Forest",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 3970,
+    "typical_low_3br": 3400,
+    "typical_high_3br": 5300,
+    "median_price_per_sqft": 2.98,
+    "typical_low_price_per_sqft": 2.5,
+    "typical_high_price_per_sqft": 3.8,
+    "benchmark_confidence": "low",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Lake Forest rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/lake-forest-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $3,970 and average size of 1,331 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Lower confidence because the city has fewer comparable apartment rentals and many family rentals are houses."
+  },
+  "Garden Grove": {
+    "city": "Garden Grove",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 2703,
+    "typical_low_3br": 2350,
+    "typical_high_3br": 3600,
+    "median_price_per_sqft": 2.58,
+    "typical_low_price_per_sqft": 2.15,
+    "typical_high_price_per_sqft": 3.25,
+    "benchmark_confidence": "medium",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Garden Grove rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/garden-grove-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $2,703 and average size of 1,047 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Apartment baseline may understate detached-home asking rents."
+  },
+  "Santa Ana": {
+    "city": "Santa Ana",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 3248,
+    "typical_low_3br": 2800,
+    "typical_high_3br": 4300,
+    "median_price_per_sqft": 2.64,
+    "typical_low_price_per_sqft": 2.2,
+    "typical_high_price_per_sqft": 3.35,
+    "benchmark_confidence": "medium",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Santa Ana rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/santa-ana-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $3,248 and average size of 1,229 sqft."
+      },
+      {
+        "name": "fmr.fyi Santa Ana FY2026 SAFMR view",
+        "url": "https://fmr.fyi/city/santa-ana-ca",
+        "accessed_at": "2026-05-06",
+        "notes": "Shows HUD FY2026 3BR SAFMR and market-rent ranges by ZIP; used as a cross-check, not the primary benchmark."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Central OC apartment benchmark; confirm neighborhood and parking details carefully."
+  },
+  "Aliso Viejo": {
+    "city": "Aliso Viejo",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 4472,
+    "typical_low_3br": 3800,
+    "typical_high_3br": 6000,
+    "median_price_per_sqft": 2.55,
+    "typical_low_price_per_sqft": 2.1,
+    "typical_high_price_per_sqft": 3.25,
+    "benchmark_confidence": "low",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Aliso Viejo rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/aliso-viejo-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $4,472 and average size of 1,754 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Lower confidence because 3BR inventory appears limited and unit sizes skew larger."
+  },
+  "Laguna Niguel": {
+    "city": "Laguna Niguel",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 3878,
+    "typical_low_3br": 3350,
+    "typical_high_3br": 5200,
+    "median_price_per_sqft": 2.99,
+    "typical_low_price_per_sqft": 2.5,
+    "typical_high_price_per_sqft": 3.8,
+    "benchmark_confidence": "low",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Laguna Niguel rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/laguna-niguel-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $3,878 and average size of 1,295 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Lower confidence because family rentals can be townhomes or houses with different yard/garage premiums."
+  },
+  "Yorba Linda": {
+    "city": "Yorba Linda",
+    "county": "Orange County",
+    "state": "CA",
+    "median_rent_3br": 3933,
+    "typical_low_3br": 3400,
+    "typical_high_3br": 5300,
+    "median_price_per_sqft": 2.71,
+    "typical_low_price_per_sqft": 2.25,
+    "typical_high_price_per_sqft": 3.45,
+    "benchmark_confidence": "low",
+    "data_source_type": "manual_research",
+    "data_sources": [
+      {
+        "name": "Apartments.com Yorba Linda rent trends",
+        "url": "https://www.apartments.com/rent-market-trends/yorba-linda-ca/",
+        "accessed_at": "2026-05-06",
+        "notes": "May 2026 page reports 3BR apartment average rent of $3,933 and average size of 1,450 sqft."
+      }
+    ],
+    "last_reviewed": "2026-05-06",
+    "notes": "Lower confidence because the target is likely detached-family inventory rather than apartments."
+  }
+}

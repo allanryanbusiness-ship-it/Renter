@@ -14,16 +14,13 @@
   </head>
   <body>
     <main class="dashboard-shell">
-      <section class="hero-panel panel">
-        <div class="hero-copy">
+      <section class="summary-bar panel">
+        <div class="summary-title">
           <p class="eyebrow">Orange County rental command center</p>
-          <h1>Compare family-size rentals in one dark-mode workspace.</h1>
-          <p class="hero-text">
-            Aggregate listings, normalize tradeoffs, rank the best deals, and
-            keep a manual fallback when source automation is unavailable.
-          </p>
+          <h1>Deal Review Queue</h1>
+          <p class="section-caption" id="criteria-summary">Loading criteria...</p>
         </div>
-        <div class="hero-stats" id="hero-stats"></div>
+        <div class="summary-stats" id="hero-stats"></div>
       </section>
 
       <section class="control-grid">
@@ -40,6 +37,10 @@
             <label>
               Preferred city
               <input type="text" name="city" placeholder="Any city" />
+            </label>
+            <label>
+              Preferred cities
+              <input type="text" name="preferred_cities" placeholder="Irvine, Tustin, Lake Forest" />
             </label>
             <div class="split-fields">
               <label>
@@ -64,6 +65,8 @@
             <div class="checkbox-row">
               <label><input type="checkbox" name="require_backyard" /> Backyard required</label>
               <label><input type="checkbox" name="require_garage" /> Garage required</label>
+              <label><input type="checkbox" name="allow_unknown_backyard" /> Allow unknown backyard in queue</label>
+              <label><input type="checkbox" name="allow_unknown_garage" /> Allow unknown garage in queue</label>
               <label><input type="checkbox" name="pets_required" /> Pets-friendly only</label>
             </div>
             <label>
@@ -86,18 +89,89 @@
                 <option value="">All Orange County</option>
               </select>
             </label>
+            <label>
+              Source
+              <select name="source_name">
+                <option value="">All sources</option>
+              </select>
+            </label>
             <div class="split-fields">
               <label>
                 Min bedrooms
                 <input type="number" name="min_bedrooms" min="0" />
               </label>
               <label>
+                Max price
+                <input type="number" name="max_price" min="0" step="50" />
+              </label>
+            </div>
+            <div class="split-fields">
+              <label>
+                Backyard
+                <select name="backyard">
+                  <option value="">Any</option>
+                  <option value="yes_unknown">Yes or unknown</option>
+                  <option value="yes">Confirmed yes</option>
+                  <option value="unknown">Unknown</option>
+                  <option value="no">No</option>
+                </select>
+              </label>
+              <label>
+                Garage
+                <select name="garage">
+                  <option value="">Any</option>
+                  <option value="yes_unknown">Yes or unknown</option>
+                  <option value="yes">Confirmed yes</option>
+                  <option value="unknown">Unknown</option>
+                  <option value="no">No</option>
+                </select>
+              </label>
+            </div>
+            <div class="split-fields">
+              <label>
+                Watchlist
+                <select name="watchlist_status">
+                  <option value="">Any status</option>
+                  <option value="review">Review</option>
+                  <option value="shortlist">Shortlist</option>
+                  <option value="tour">Tour</option>
+                  <option value="needs_manual_review">Needs manual review</option>
+                </select>
+              </label>
+              <label>
+                Decision
+                <select name="decision_status">
+                  <option value="">Any decision</option>
+                  <option value="new">New</option>
+                  <option value="promising">Promising</option>
+                  <option value="needs_review">Needs review</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="tour_scheduled">Tour scheduled</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </label>
+            </div>
+            <div class="split-fields">
+              <label>
+                Needs review
+                <select name="needs_review">
+                  <option value="">Any</option>
+                  <option value="true">Needs review only</option>
+                </select>
+              </label>
+              <label>
                 Sort by
                 <select name="sort_by">
-                  <option value="best_deal">Best deal</option>
+                  <option value="overall_score">Overall score</option>
+                  <option value="best_below_market">Best below market</option>
+                  <option value="deal_score">Deal score</option>
+                  <option value="match_score">Match score</option>
                   <option value="price_asc">Lowest price</option>
-                  <option value="space_desc">Most space</option>
                   <option value="newest">Newest</option>
+                  <option value="confidence">Confidence</option>
+                  <option value="completeness">Completeness</option>
+                  <option value="space_desc">Most space</option>
                 </select>
               </label>
             </div>
@@ -107,6 +181,46 @@
               <label><input type="checkbox" name="pets_required" /> Pets</label>
             </div>
             <button type="submit" class="button-secondary">Refresh Listings</button>
+          </form>
+
+          <div class="divider"></div>
+
+          <div class="panel-header">
+            <h2>Automatic Discovery</h2>
+            <span class="pill">Approved providers only</span>
+          </div>
+          <form id="discovery-form" class="stack-form discovery-panel">
+            <p class="section-caption">
+              Runs configured provider/API adapters and imports matching candidates through the same dedupe, provenance,
+              scoring, and review workflow as manual imports. No listing-site scraping is performed.
+            </p>
+            <label>
+              Saved search
+              <select name="saved_search_id" id="saved-search-selector">
+                <option value="">Loading saved searches...</option>
+              </select>
+            </label>
+            <div id="discovery-providers" class="provider-list">Loading providers...</div>
+            <div class="split-fields">
+              <label>
+                Candidate limit
+                <input type="number" name="limit" min="1" max="100" value="25" />
+              </label>
+              <label class="checkbox-inline">
+                <input type="checkbox" name="dry_run" />
+                Dry run only
+              </label>
+            </div>
+            <div class="button-row">
+              <button type="submit" class="button-primary">Run Discovery</button>
+              <button type="button" class="button-secondary" id="mock-discovery-button">Mock Discovery</button>
+            </div>
+            <div class="quick-filter-row">
+              <button type="button" class="button-secondary" data-discovery-filter="new">New from discovery</button>
+              <button type="button" class="button-secondary" data-discovery-filter="needs-review">Needs review from discovery</button>
+            </div>
+            <p class="form-status" id="discovery-status"></p>
+            <div class="discovery-runs" id="discovery-runs">Loading discovery run history...</div>
           </form>
 
           <div class="divider"></div>
@@ -165,6 +279,137 @@
             </label>
             <button type="submit" class="button-primary">Add Manual Listing</button>
           </form>
+
+          <div class="divider"></div>
+
+          <div class="panel-header">
+            <h2>Paste Import</h2>
+            <span class="pill">Deterministic parser</span>
+          </div>
+          <form id="paste-form" class="stack-form">
+            <label>
+              Source URL
+              <input type="url" name="source_url" placeholder="https://..." />
+            </label>
+            <label>
+              Source name
+              <input type="text" name="source_name" placeholder="Auto-detect when blank" />
+            </label>
+            <label>
+              Listing text
+              <textarea name="raw_text" rows="8" required></textarea>
+            </label>
+            <label>
+              Notes
+              <textarea name="notes" rows="2"></textarea>
+            </label>
+            <button type="submit" class="button-primary">Import Pasted Listing</button>
+          </form>
+
+          <div class="divider"></div>
+
+          <div class="panel-header">
+            <h2>CSV Import</h2>
+            <span class="pill">Safe file import</span>
+          </div>
+          <form id="csv-form" class="stack-form">
+            <label>
+              CSV file
+              <input type="file" name="csv_file" accept=".csv,text/csv" />
+            </label>
+            <label>
+              Or paste CSV
+              <textarea name="csv_text" rows="6" placeholder="title,city,price,beds,baths,backyard,garage"></textarea>
+            </label>
+            <label>
+              Source name
+              <input type="text" name="source_name" value="CSV Import" />
+            </label>
+            <button type="submit" class="button-primary">Import CSV</button>
+            <p class="form-status" id="csv-status"></p>
+          </form>
+
+          <div class="divider"></div>
+
+          <div class="panel-header">
+            <h2>URL Reference</h2>
+            <span class="pill">No scraping</span>
+          </div>
+          <form id="url-form" class="stack-form">
+            <label>
+              Listing URL
+              <input type="url" name="url" required />
+            </label>
+            <label>
+              Title
+              <input type="text" name="title" placeholder="Optional" />
+            </label>
+            <label>
+              Notes
+              <textarea name="notes" rows="2"></textarea>
+            </label>
+            <button type="submit" class="button-primary">Save URL Reference</button>
+          </form>
+
+          <div class="divider"></div>
+
+          <div class="panel-header">
+            <h2>Browser Clipper</h2>
+            <span class="pill">User-driven capture</span>
+          </div>
+          <div class="clipper-panel stack-form">
+            <p class="section-caption">
+              Drag the bookmarklet to your bookmarks bar. On a listing page, select the useful details and click it.
+              If direct import is blocked by the browser or listing site, the clip is copied for fallback import here.
+            </p>
+            <a id="bookmarklet-link" class="bookmarklet-link" href="#">Clip to Renter</a>
+            <label>
+              Bookmarklet code
+              <textarea id="bookmarklet-code" rows="4" readonly></textarea>
+            </label>
+            <p class="form-status">
+              This stores user-selected text as plain text. It does not scrape pages, bypass CAPTCHA, or fetch listing URLs server-side.
+              See <a href="/BOOKMARKLET.md" target="_blank" rel="noreferrer">BOOKMARKLET.md</a>.
+            </p>
+            <form id="clip-form" class="stack-form">
+              <label>
+                Fallback clipped JSON
+                <textarea name="clip_payload" rows="7" placeholder="Paste JSON copied by the bookmarklet fallback."></textarea>
+              </label>
+              <button type="submit" class="button-primary">Import Browser Clip</button>
+              <p class="form-status" id="clip-status"></p>
+            </form>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="panel-header">
+            <h2>System</h2>
+            <span class="pill">Local data controls</span>
+          </div>
+          <div class="system-panel stack-form">
+            <div class="system-grid" id="system-status">
+              <div><span>Database</span><strong>Loading...</strong></div>
+              <div><span>Listings</span><strong>...</strong></div>
+              <div><span>Last backup</span><strong>...</strong></div>
+              <div><span>Version</span><strong>...</strong></div>
+            </div>
+            <div class="system-actions">
+              <a class="button-link" href="/api/export/listings.json" target="_blank" rel="noreferrer">Export JSON</a>
+              <a class="button-link" href="/api/export/listings.csv" target="_blank" rel="noreferrer">Export CSV</a>
+              <a class="button-link" href="/api/export/full.json" target="_blank" rel="noreferrer">Full Export</a>
+              <button type="button" class="button-secondary" id="backup-button">Create Backup</button>
+            </div>
+            <div class="quality-box" id="data-quality">Loading data quality...</div>
+            <form id="full-import-form" class="stack-form">
+              <label>
+                Restore / merge full JSON
+                <textarea name="full_json" rows="6" placeholder="Paste a prior /api/export/full.json payload. This merge is non-destructive."></textarea>
+              </label>
+              <button type="submit" class="button-secondary">Import Full JSON</button>
+              <p class="form-status" id="system-status-message"></p>
+            </form>
+          </div>
         </aside>
       </section>
 
@@ -172,11 +417,14 @@
         <div class="section-header">
           <div>
             <p class="eyebrow">Deal ranking</p>
-            <h2>Best-matching rentals</h2>
+            <h2>Ranked deal queue</h2>
           </div>
           <p class="section-caption" id="board-summary">Loading listings...</p>
         </div>
-        <div class="ranking-grid" id="ranking-grid"></div>
+        <div class="queue-layout">
+          <div class="ranking-grid" id="ranking-grid"></div>
+          <aside class="detail-panel" id="detail-panel"></aside>
+        </div>
       </section>
 
       <section class="panel cards-panel">
@@ -207,12 +455,17 @@
                 <th>Price</th>
                 <th>Bed/Bath</th>
                 <th>Sqft</th>
+                <th>$/Bed</th>
+                <th>$/Sqft</th>
                 <th>City</th>
+                <th>Market</th>
                 <th>Neighborhood</th>
                 <th>Backyard</th>
                 <th>Garage</th>
                 <th>Pets</th>
                 <th>Source</th>
+                <th>Confidence</th>
+                <th>Decision</th>
                 <th>Watch</th>
               </tr>
             </thead>
@@ -232,4 +485,3 @@
     <script src="{{ url_for('static', path='js/app.js') }}" defer></script>
   </body>
 </html>
-

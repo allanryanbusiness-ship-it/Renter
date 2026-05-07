@@ -8,3 +8,10 @@ __pycache__/
 .DS_Store
 data/renter.db
 data/*.db
+data/*.sqlite
+backups/*
+!backups/.gitkeep
+exports/*
+!exports/.gitkeep
+logs/*
+!logs/.gitkeep

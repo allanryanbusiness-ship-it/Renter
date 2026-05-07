@@ -12,6 +12,5 @@
 
 1. Add CSV import and export workflows.
 2. Add source-run history screens and watchlist workflows.
-3. Add approved third-party API adapters behind environment-driven configuration.
+3. Add approved/provider-based automatic discovery with local feed and optional provider API adapters.
 4. Add auth, saved views, alerts, and scheduled refresh jobs.
-
