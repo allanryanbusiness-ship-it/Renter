@@ -6,17 +6,17 @@ import json
 from pathlib import Path
 from typing import Any, Protocol
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, urlencode
+from urllib.parse import quote, urlencode, urlparse
 from urllib.request import Request, urlopen
 
 from app.config import (
     APPROVED_PROVIDER_FEED_PATH,
+    APPROVED_PROVIDER_API_KEY,
+    APPROVED_PROVIDER_API_NAME,
+    APPROVED_PROVIDER_API_TIMEOUT_SECONDS,
+    APPROVED_PROVIDER_API_URL,
     DISCOVERY_DEFAULT_CITIES,
     ORANGE_COUNTY_DISCOVERY_CITIES,
-    RENTCAST_API_BASE_URL,
-    RENTCAST_API_KEY,
-    RENTCAST_ENABLED,
-    RENTCAST_TIMEOUT_SECONDS,
 )
 from app.sources.base import IngestionResult, NormalizedListing, Provenance, confidence_for_source, normalize_status
 from app.sources.normalizer import OC_CITIES, clean_text, find_evidence, parse_float, parse_int, parse_money
@@ -257,184 +257,130 @@ class MockDiscoveryProviderAdapter(ApprovedProviderFeedAdapter):
     compliance_notes = "Demo/mock data for exercising discovery, dedupe, scoring, and review flows without credentials."
 
 
-class RentCastRentalListingsAdapter(BaseDiscoveryAdapter):
-    key = "rentcast"
-    source_name = "RentCast"
+class ApprovedJsonApiAdapter(BaseDiscoveryAdapter):
+    key = "approved_json_api"
+    source_name = "Approved JSON Provider API"
     source_type = "provider_api"
-    enabled_by_default = RENTCAST_ENABLED
-    requires_api_key = True
-    docs_url = "https://developers.rentcast.io/reference/rental-listings-long-term"
-    rate_limit_notes = "Uses RentCast API account limits. Keep request volume low and review provider plan limits."
-    compliance_notes = "Approved API adapter. Requires user's RentCast API key and explicit enablement."
+    enabled_by_default = False
+    requires_api_key = False
+    docs_url = "DISCOVERY.md"
+    rate_limit_notes = "Uses the configured provider endpoint's documented rate limits. Keep request volume low."
+    compliance_notes = "Generic approved JSON API adapter. Configure only for sources the user is allowed to use."
 
     def __init__(
         self,
-        api_key: str = RENTCAST_API_KEY,
-        api_base_url: str = RENTCAST_API_BASE_URL,
-        timeout_seconds: float = RENTCAST_TIMEOUT_SECONDS,
+        api_url: str = APPROVED_PROVIDER_API_URL,
+        api_key: str = APPROVED_PROVIDER_API_KEY,
+        provider_name: str = APPROVED_PROVIDER_API_NAME,
+        timeout_seconds: float = APPROVED_PROVIDER_API_TIMEOUT_SECONDS,
     ) -> None:
+        self.api_url = api_url.strip()
         self.api_key = api_key.strip()
-        self.api_base_url = api_base_url.rstrip("/")
+        self.source_name = provider_name or self.source_name
         self.timeout_seconds = timeout_seconds
 
     @property
     def configured(self) -> bool:
-        return bool(self.api_key)
+        return bool(self.api_url)
 
     @property
     def status(self) -> str:
-        if self.enabled_by_default and self.configured:
-            return "active"
         if self.configured:
-            return "available_disabled_by_default"
+            return "available"
         return "not_configured"
 
     @property
     def is_enabled(self) -> bool:
-        return self.enabled_by_default and self.configured
+        return self.configured
 
     def discover(self, criteria: ListingDiscoveryCriteria) -> IngestionResult:
         if not self.configured:
             raise ProviderConfigurationError(
-                "RentCast discovery requires RENTCAST_API_KEY or RENTAL_DASHBOARD_RENTCAST_API_KEY. "
-                "Set RENTAL_DASHBOARD_RENTCAST_ENABLED=true to include it in default automatic discovery."
+                "Approved JSON API discovery requires RENTAL_DASHBOARD_PROVIDER_API_URL. "
+                "Only configure it for a provider/feed the user is allowed to use."
             )
 
-        cities = _cities_for_provider_query(criteria)
-        zip_codes = [zip_code for zip_code in (criteria.zip_codes or []) if zip_code]
-        if not cities and not zip_codes:
-            return IngestionResult(warnings=["No city or ZIP code was available for RentCast discovery."], rows_skipped=0)
-
+        records = self._fetch_records(criteria)
         result = IngestionResult()
-        per_city_limit = max(1, min(500, criteria.limit))
-        for city in cities:
-            records = self._fetch_city(city, criteria, per_city_limit)
-            result.rows_received += len(records)
-            for record in records:
-                listing = _record_to_normalized_listing(
-                    record,
-                    criteria,
-                    source_name=self.source_name,
-                    source_type=self.source_type,
-                    source_domain="api.rentcast.io",
-                    raw_payload_prefix={
-                        "provider": "rentcast",
-                        "docs_url": self.docs_url,
-                        "query_city": city,
-                    },
-                )
-                if listing is None:
-                    result.rows_skipped += 1
-                    continue
-                result.listings.append(listing)
-                if len(result.listings) >= criteria.limit:
-                    break
+        result.rows_received = len(records)
+        source_domain = urlparse(self.api_url).netloc or None
+        limit_reached = False
+        for record in records:
+            listing = _record_to_normalized_listing(
+                record,
+                criteria,
+                source_name=self.source_name,
+                source_type=self.source_type,
+                source_domain=source_domain,
+                raw_payload_prefix={
+                    "provider": self.key,
+                    "api_url": self.api_url,
+                },
+            )
+            if listing is None:
+                result.rows_skipped += 1
+                continue
             if len(result.listings) >= criteria.limit:
+                result.rows_skipped += 1
+                limit_reached = True
                 break
-        for zip_code in zip_codes:
-            if len(result.listings) >= criteria.limit:
-                break
-            records = self._fetch_zip_code(zip_code, criteria, per_city_limit)
-            result.rows_received += len(records)
-            for record in records:
-                listing = _record_to_normalized_listing(
-                    record,
-                    criteria,
-                    source_name=self.source_name,
-                    source_type=self.source_type,
-                    source_domain="api.rentcast.io",
-                    raw_payload_prefix={
-                        "provider": "rentcast",
-                        "docs_url": self.docs_url,
-                        "query_zip_code": zip_code,
-                    },
-                )
-                if listing is None:
-                    result.rows_skipped += 1
-                    continue
-                result.listings.append(listing)
-                if len(result.listings) >= criteria.limit:
-                    break
+            result.listings.append(listing)
 
         result.rows_imported = len(result.listings)
+        if limit_reached:
+            result.warnings.append(f"Discovery limit of {criteria.limit} candidates was reached.")
         if not result.listings:
-            result.warnings.append("RentCast returned no candidates matching the active search criteria.")
+            result.warnings.append("Approved JSON API returned no candidates matching the active search criteria.")
         return result
 
-    def _fetch_city(self, city: str, criteria: ListingDiscoveryCriteria, limit: int) -> list[dict[str, Any]]:
+    def _fetch_records(self, criteria: ListingDiscoveryCriteria) -> list[dict[str, Any]]:
         query: dict[str, Any] = {
-            "city": city,
             "state": criteria.state,
-            "status": "Active",
-            "limit": limit,
+            "limit": criteria.limit,
         }
+        cities = _cities_for_provider_query(criteria)
+        if criteria.city:
+            query["city"] = criteria.city
+        if cities:
+            query["cities"] = ",".join(cities)
+        if criteria.zip_codes:
+            query["zip_codes"] = ",".join(criteria.zip_codes)
         if criteria.min_bedrooms:
-            query["bedrooms"] = f"{criteria.min_bedrooms}-"
+            query["min_bedrooms"] = criteria.min_bedrooms
         if criteria.min_bathrooms:
-            query["bathrooms"] = f"{criteria.min_bathrooms}-"
+            query["min_bathrooms"] = criteria.min_bathrooms
         if criteria.min_sqft:
-            query["squareFootage"] = f"{criteria.min_sqft}-"
+            query["min_sqft"] = criteria.min_sqft
         if criteria.max_price:
-            query["price"] = f"0-{criteria.max_price}"
+            query["max_price"] = criteria.max_price
+        if criteria.property_types:
+            query["property_types"] = ",".join(criteria.property_types)
 
-        url = f"{self.api_base_url}/listings/rental/long-term?{urlencode(query)}"
+        separator = "&" if "?" in self.api_url else "?"
+        url = f"{self.api_url}{separator}{urlencode(query)}"
+        headers = {
+            "Accept": "application/json",
+            "User-Agent": "RenterDashboard/0.1 approved-provider-api",
+        }
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
         request = Request(
             url,
-            headers={
-                "Accept": "application/json",
-                "X-Api-Key": self.api_key,
-                "User-Agent": "RenterDashboard/0.1 provider-api",
-            },
+            headers=headers,
             method="GET",
         )
         try:
             with urlopen(request, timeout=self.timeout_seconds) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except HTTPError as exc:
-            raise ProviderConfigurationError(f"RentCast request failed with HTTP {exc.code}.") from exc
+            raise ProviderConfigurationError(f"Approved JSON API request failed with HTTP {exc.code}.") from exc
         except URLError as exc:
-            raise ProviderConfigurationError(f"RentCast request failed: {exc.reason}") from exc
+            raise ProviderConfigurationError(f"Approved JSON API request failed: {exc.reason}") from exc
 
+        if isinstance(payload, dict):
+            payload = payload.get("listings") or payload.get("results") or payload.get("data")
         if not isinstance(payload, list):
-            raise ProviderConfigurationError("RentCast response was not a listing array.")
-        return [record for record in payload if isinstance(record, dict)]
-
-    def _fetch_zip_code(self, zip_code: str, criteria: ListingDiscoveryCriteria, limit: int) -> list[dict[str, Any]]:
-        query: dict[str, Any] = {
-            "zipCode": zip_code,
-            "state": criteria.state,
-            "status": "Active",
-            "limit": limit,
-        }
-        if criteria.min_bedrooms:
-            query["bedrooms"] = f"{criteria.min_bedrooms}-"
-        if criteria.min_bathrooms:
-            query["bathrooms"] = f"{criteria.min_bathrooms}-"
-        if criteria.min_sqft:
-            query["squareFootage"] = f"{criteria.min_sqft}-"
-        if criteria.max_price:
-            query["price"] = f"0-{criteria.max_price}"
-
-        url = f"{self.api_base_url}/listings/rental/long-term?{urlencode(query)}"
-        request = Request(
-            url,
-            headers={
-                "Accept": "application/json",
-                "X-Api-Key": self.api_key,
-                "User-Agent": "RenterDashboard/0.1 provider-api",
-            },
-            method="GET",
-        )
-        try:
-            with urlopen(request, timeout=self.timeout_seconds) as response:
-                payload = json.loads(response.read().decode("utf-8"))
-        except HTTPError as exc:
-            raise ProviderConfigurationError(f"RentCast request failed with HTTP {exc.code}.") from exc
-        except URLError as exc:
-            raise ProviderConfigurationError(f"RentCast request failed: {exc.reason}") from exc
-
-        if not isinstance(payload, list):
-            raise ProviderConfigurationError("RentCast response was not a listing array.")
+            raise ProviderConfigurationError("Approved JSON API response must be a listing array or object with listings/results/data.")
         return [record for record in payload if isinstance(record, dict)]
 
 
@@ -499,7 +445,7 @@ def discovery_adapter_registry() -> dict[str, ListingDiscoveryAdapter]:
     return {
         "approved_demo_feed": ApprovedProviderFeedAdapter(),
         "mock": MockDiscoveryProviderAdapter(),
-        "rentcast": RentCastRentalListingsAdapter(),
+        "approved_json_api": ApprovedJsonApiAdapter(),
         "apify": ApifyPlaceholderAdapter(),
         "brightdata": BrightDataPlaceholderAdapter(),
     }
@@ -565,8 +511,6 @@ def _record_to_normalized_listing(
 
     source_listing_id = clean_text(_first(record, "id", "listingId", "listing_id", "sourceListingId", "mlsNumber"))
     source_url = clean_text(_first(record, "sourceUrl", "source_url", "listingUrl", "url"))
-    if not source_url and source_name == "RentCast" and source_listing_id:
-        source_url = f"https://api.rentcast.io/v1/listings/rental/long-term/{quote(source_listing_id)}"
     if not source_url and source_listing_id:
         source_url = f"https://example.com/approved-provider-feed/{quote(source_listing_id)}"
 

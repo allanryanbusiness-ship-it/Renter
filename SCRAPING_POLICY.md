@@ -97,7 +97,7 @@ Automatic discovery is allowed only through approved/provider-based adapters.
 
 The app must never claim that live Zillow, Redfin, Realtor.com, Apartments.com, HotPads, Craigslist, Facebook Marketplace, or any other site scraping works unless that source adapter has been implemented, tested, reviewed, and documented.
 
-Current supported ingestion paths are mock/approved-provider discovery, optional configured RentCast API discovery, browser clipping, manual entry, copy/paste import, CSV import, and URL reference capture.
+Current supported ingestion paths are mock/approved-provider discovery, optional configured approved JSON API discovery, browser clipping, manual entry, copy/paste import, CSV import, and URL reference capture.
 
 ## Source-Specific Risk Notes
 

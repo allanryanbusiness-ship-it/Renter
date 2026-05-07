@@ -8,7 +8,7 @@ Automatic discovery imports rental candidates through approved/provider-based ad
 |---|---|---|---|---|
 | Mock Discovery Provider | `mock` | Available without credentials | No | Realistic demo Orange County rental candidates for dashboard use, tests, and local workflow demos |
 | Approved Demo Provider Feed | `approved_demo_feed` | Available without credentials | No | Local provider-style JSON feed for testing normalization, dedupe, scoring, and run history |
-| RentCast Rental Listings API | `rentcast` | Disabled until configured | Yes, provider API only | Optional API-backed discovery when the user supplies an API key and enables it |
+| Approved JSON Provider API | `approved_json_api` | Disabled until configured | Yes, approved provider/feed API only | Generic adapter for a reviewed JSON endpoint |
 | Apify Placeholder | `apify` | Not implemented | No | Disabled placeholder for future reviewed Apify actor integration |
 | Bright Data Placeholder | `brightdata` | Not implemented | No | Disabled placeholder for future reviewed Bright Data integration |
 
@@ -114,14 +114,14 @@ Each adapter exposes:
 
 Provider code lives under `app/sources/discovery.py` and is re-exported through `app/discovery/` and `app/discovery/providers/`.
 
-## RentCast Setup
+## Approved JSON API Setup
 
-RentCast is optional and never enabled by default.
+The generic API adapter is optional and never enabled without a configured URL. Use it only for a provider/feed endpoint you are allowed to access.
 
 ```bash
-export RENTAL_DASHBOARD_RENTCAST_ENABLED=true
-export RENTCAST_API_KEY=your_key_here
-# RENTAL_DASHBOARD_RENTCAST_API_KEY is also accepted.
+export RENTAL_DASHBOARD_PROVIDER_API_URL=https://your-approved-provider.example/listings
+export RENTAL_DASHBOARD_PROVIDER_API_KEY=your_optional_key
+export RENTAL_DASHBOARD_PROVIDER_API_NAME="Approved Property Feed"
 ```
 
 Then run:
@@ -129,10 +129,10 @@ Then run:
 ```bash
 curl -X POST http://127.0.0.1:8000/api/discovery/run \
   -H 'content-type: application/json' \
-  -d '{"provider_keys":["rentcast"],"limit":25}'
+  -d '{"provider_keys":["approved_json_api"],"limit":25}'
 ```
 
-The RentCast adapter calls the configured provider API endpoint only. Tests do not make real RentCast calls.
+The endpoint may return a JSON array or an object with `listings`, `results`, or `data`. Tests do not make real external API calls.
 
 ## Placeholder Providers
 
@@ -155,4 +155,4 @@ uv run pytest
 uv run python -m compileall app
 ```
 
-The tests cover provider metadata, required adapter interface behavior, mock discovery, run creation/detail, import summaries, saved-search CRUD/defaults, exact URL dedupe, source listing ID dedupe, `last_seen_at` updates, user state preservation, backyard/garage extraction, missing RentCast key handling, and the mock endpoint.
+The tests cover provider metadata, required adapter interface behavior, mock discovery, run creation/detail, import summaries, saved-search CRUD/defaults, exact URL dedupe, source listing ID dedupe, `last_seen_at` updates, user state preservation, backyard/garage extraction, missing approved API URL handling, and the mock endpoint.

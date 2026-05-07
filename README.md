@@ -132,9 +132,9 @@ export RENTAL_DASHBOARD_HOST=127.0.0.1
 export RENTAL_DASHBOARD_PORT=8000
 export RENTAL_DASHBOARD_APPROVED_FEED_PATH=/absolute/path/approved_provider_feed.json
 export RENTAL_DASHBOARD_DISCOVERY_DEFAULT_CITIES=Irvine,Tustin,Lake Forest,Costa Mesa
-export RENTAL_DASHBOARD_RENTCAST_ENABLED=false
-export RENTAL_DASHBOARD_RENTCAST_API_KEY=
-# RENTCAST_API_KEY is also accepted for local shells that use provider-native names.
+export RENTAL_DASHBOARD_PROVIDER_API_URL=
+export RENTAL_DASHBOARD_PROVIDER_API_KEY=
+export RENTAL_DASHBOARD_PROVIDER_API_NAME=Approved JSON Provider API
 # APIFY_API_TOKEN and BRIGHTDATA_API_KEY are reserved for disabled placeholders.
 ```
 
@@ -150,7 +150,7 @@ Current provider keys:
 |---|---|---|---|
 | `mock` | Works without credentials | No | Demo/mock Orange County rental candidates for dashboard testing |
 | `approved_demo_feed` | Works without credentials | No | Reads [app/data/approved_provider_feed.json](app/data/approved_provider_feed.json) |
-| `rentcast` | Disabled until configured | Yes, provider API only | Requires `RENTCAST_API_KEY` or `RENTAL_DASHBOARD_RENTCAST_API_KEY` |
+| `approved_json_api` | Disabled until configured | Yes, approved provider/feed API only | Generic adapter for a user-approved JSON endpoint |
 | `apify` | Placeholder only | No | Disabled pending compliance review and implementation |
 | `brightdata` | Placeholder only | No | Disabled pending compliance review and implementation |
 
@@ -170,11 +170,12 @@ curl -X POST http://127.0.0.1:8000/api/discovery/run \
   -d '{"provider_keys":["mock"],"limit":10,"dry_run":true,"import_results":false}'
 ```
 
-Optional RentCast provider API discovery is available but disabled unless configured:
+Optional approved JSON API discovery is available but disabled unless configured:
 
 ```bash
-export RENTAL_DASHBOARD_RENTCAST_ENABLED=true
-export RENTCAST_API_KEY=...
+export RENTAL_DASHBOARD_PROVIDER_API_URL=https://your-approved-provider.example/listings
+export RENTAL_DASHBOARD_PROVIDER_API_KEY=...
+export RENTAL_DASHBOARD_PROVIDER_API_NAME="Approved Property Feed"
 ```
 
 Discovery candidates are normalized, exact source URL/source listing ID duplicates update existing listings, possible duplicates are marked for review, user notes/decision/watchlist state are preserved on updates, and scores are recalculated after import. Backyard and garage fields are inferred from explicit provider fields plus descriptions/amenities and weak evidence is marked for review. See [DISCOVERY.md](DISCOVERY.md) and [AUTOMATIC_LISTING_DISCOVERY.md](AUTOMATIC_LISTING_DISCOVERY.md).
@@ -387,7 +388,7 @@ Allowed current ingestion paths:
 | Manual entry | No |
 | Mock discovery provider | No |
 | Automatic local provider feed | No |
-| RentCast provider API | No listing-site page fetch; calls provider API only when configured |
+| Approved JSON provider API | No listing-site page fetch; calls a configured provider/feed API only |
 | Apify/Bright Data placeholders | No, disabled placeholders only |
 | Browser clipper | No |
 | Paste import | No |

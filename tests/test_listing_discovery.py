@@ -24,8 +24,8 @@ def test_discovery_providers_endpoint_lists_safe_and_configured_states() -> None
     assert providers["mock"]["source_type"] == "mock_provider"
     assert providers["mock"]["supports_rentals"] is True
     assert "city" in providers["mock"]["supports_filters"]
-    assert providers["rentcast"]["requires_api_key"] is True
-    assert providers["rentcast"]["configured"] is False
+    assert providers["approved_json_api"]["configured"] is False
+    assert providers["approved_json_api"]["status"] == "not_configured"
     assert providers["apify"]["status"] == "not_implemented"
     assert providers["brightdata"]["status"] == "not_implemented"
     assert providers["approved_demo_feed"]["id"] is not None
@@ -33,7 +33,7 @@ def test_discovery_providers_endpoint_lists_safe_and_configured_states() -> None
     with SessionLocal() as db:
         provider_rows = db.scalars(select(DiscoveryProvider)).all()
 
-    assert {provider.key for provider in provider_rows} >= {"approved_demo_feed", "mock", "rentcast", "apify", "brightdata"}
+    assert {provider.key for provider in provider_rows} >= {"approved_demo_feed", "mock", "approved_json_api", "apify", "brightdata"}
 
 
 def test_mock_provider_implements_required_adapter_surface() -> None:
@@ -200,16 +200,16 @@ def test_discovery_dry_run_returns_candidates_without_importing() -> None:
     assert run.candidate_preview
 
 
-def test_unconfigured_rentcast_provider_is_skipped_without_network_call() -> None:
+def test_unconfigured_approved_json_api_provider_is_skipped_without_network_call() -> None:
     with TestClient(app) as client:
-        response = client.post("/api/discovery/run", json={"provider_keys": ["rentcast"], "limit": 1})
+        response = client.post("/api/discovery/run", json={"provider_keys": ["approved_json_api"], "limit": 1})
 
     assert response.status_code == 200
     payload = response.json()
     assert payload["data"]["summaries"][0]["status"] == "skipped"
     assert payload["data"]["summaries"][0]["discovery_run_id"] is not None
     assert payload["errors"]
-    assert "RENTCAST_API_KEY" in payload["errors"][0]["message"]
+    assert "RENTAL_DASHBOARD_PROVIDER_API_URL" in payload["errors"][0]["message"]
 
 
 def test_mock_discovery_endpoint_imports_without_credentials() -> None:

@@ -26,7 +26,7 @@ The first implementation supports:
 | 4 | CSV import | Use now | Supports exports from spreadsheets, browser clips, or approved sources |
 | 5 | URL reference | Use now | Preserves provenance without claiming extraction |
 | 6 | Approved provider feed | Use now | Local/provider-style feed path exercises automatic discovery without external scraping |
-| 7 | RentCast / ATTOM / Bridge | Evaluate next | More durable than brittle site scraping, but requires accounts and terms review |
+| 7 | Approved JSON provider/feed API | Evaluate next | More durable than brittle site scraping when a lower-cost approved feed exists |
 | 8 | Apify / Bright Data / Oxylabs / ScraperAPI | Review case-by-case | Operationally strong but still needs source-level compliance review |
 | 9 | Direct site scrapers | Keep disabled | High breakage and terms risk |
 
@@ -44,7 +44,8 @@ The first implementation supports:
 
 ### Best future data providers
 
-- `RentCast`: active rental listing and rent-estimate API candidate. Its public docs include rental listings endpoints such as long-term rental listings, property records, rent estimates, and market data. Reference: <https://developers.rentcast.io/reference/introduction>
+- `Approved JSON Provider API`: generic adapter for a reviewed, lower-cost feed or API that returns listing records as JSON.
+- `RentCast`: evaluated as an API candidate but not selected for this project because cost is not acceptable for the intended local workflow.
 - `ATTOM`: strong property and rental valuation enrichment. ATTOM documents Rental AVM and property API endpoints. References: <https://api.developer.attomdata.com/docs>, <https://cloud-help.attomdata.com/article/501-rental-avm>
 - `Bridge Interactive`: official MLS-oriented route where MLS access exists. Bridge says developers request data access from MLS customers and can access complementary datasets such as Zillow public records and Zestimates when authorized. Reference: <https://www.bridgeinteractive.com/developers/bridge-api/>
 
@@ -161,12 +162,12 @@ The app now includes an approved/provider-based discovery path:
 - `GET /api/saved-searches`, `POST /api/saved-searches`, `PUT /api/saved-searches/{id}`, and `DELETE /api/saved-searches/{id}` manage saved searches.
 - `mock` works without credentials and returns local demo candidates.
 - `approved_demo_feed` is enabled by default and reads [app/data/approved_provider_feed.json](app/data/approved_provider_feed.json).
-- `rentcast` is disabled unless `RENTAL_DASHBOARD_RENTCAST_ENABLED=true` and `RENTCAST_API_KEY` or `RENTAL_DASHBOARD_RENTCAST_API_KEY` are set.
+- `approved_json_api` is disabled unless `RENTAL_DASHBOARD_PROVIDER_API_URL` points to a reviewed feed/API endpoint.
 - `apify` and `brightdata` are disabled placeholders only.
 - Discovery imports candidates through the same provenance, import-run, dedupe, and scoring path as other ingestion methods.
 - Exact duplicate updates preserve user notes, decision status, watchlist status, and private notes.
 
-This is not website scraping. The mock/local feed paths are demo/provider-style data; RentCast is a provider API adapter that requires user credentials and terms review.
+This is not website scraping. The mock/local feed paths are demo/provider-style data; the generic approved JSON API adapter requires a reviewed endpoint and terms review.
 
 See [DISCOVERY.md](DISCOVERY.md) and [AUTOMATIC_LISTING_DISCOVERY.md](AUTOMATIC_LISTING_DISCOVERY.md) for setup and audit details.
 
@@ -235,10 +236,10 @@ See [DISCOVERY.md](DISCOVERY.md) and [AUTOMATIC_LISTING_DISCOVERY.md](AUTOMATIC_
 
 - Data: property records, rental listings, rent estimates, market stats
 - Rental support: yes, including rental listing endpoints in public API docs
-- Cost/complexity: API key and plan review
+- Cost/complexity: not selected; pricing is not acceptable for this project's local workflow
 - Compliance concerns: review RentCast license for personal or commercial use
 - Reliability: stronger than scraping for this product's likely needs
-- Recommended use: strongest future API candidate
+- Recommended use: do not pursue for now; keep the codebase provider-agnostic
 - References: <https://developers.rentcast.io/reference/introduction>, <https://help.rentcast.io/en/collections/4081100-rentcast-api>
 
 ### ATTOM
@@ -309,7 +310,7 @@ Until adapters mature, users can re-import a pasted listing or CSV row and compa
 1. Keep manual, paste, CSV, and URL-reference ingestion as the supported MVP data paths.
 2. Add editing workflows so pasted/CSV fields can be corrected after import.
 3. Add listing snapshots for price/status change tracking.
-4. Evaluate RentCast as the first approved API adapter.
-5. Evaluate ATTOM for rent context and property enrichment.
+4. Look for lower-cost approved feeds or APIs compatible with `approved_json_api`.
+5. Evaluate ATTOM only if pricing and terms fit the local workflow.
 6. Evaluate Bridge Interactive only if MLS access is realistic.
 7. Keep all direct site scrapers disabled until a written review approves a specific source and implementation.

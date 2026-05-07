@@ -6,6 +6,7 @@ without turning the generic source-ingestion package into an orchestration layer
 
 from app.sources.discovery import (
     ApifyPlaceholderAdapter,
+    ApprovedJsonApiAdapter,
     ApprovedProviderFeedAdapter,
     BrightDataPlaceholderAdapter,
     DiscoveryProviderInfo,
@@ -14,13 +15,13 @@ from app.sources.discovery import (
     ListingDiscoveryCriteria,
     MockDiscoveryProviderAdapter,
     ProviderConfigurationError,
-    RentCastRentalListingsAdapter,
     discovery_adapter_registry,
     list_discovery_provider_info,
 )
 
 __all__ = [
     "ApifyPlaceholderAdapter",
+    "ApprovedJsonApiAdapter",
     "ApprovedProviderFeedAdapter",
     "BrightDataPlaceholderAdapter",
     "DiscoveryProviderInfo",
@@ -29,7 +30,6 @@ __all__ = [
     "ListingDiscoveryCriteria",
     "MockDiscoveryProviderAdapter",
     "ProviderConfigurationError",
-    "RentCastRentalListingsAdapter",
     "discovery_adapter_registry",
     "list_discovery_provider_info",
 ]

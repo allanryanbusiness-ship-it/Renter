@@ -12,8 +12,8 @@ Audit date: 2026-05-07
 |---|---|---|
 | Discovery architecture added | pass | `app/discovery/`, `app/discovery/base.py`, `app/discovery/service.py`, `app/discovery/models.py`, `app/discovery/providers/`, `app/services/discovery.py`, and `app/services/saved_searches.py` define package boundaries |
 | Provider interface added | pass | `DiscoveryProviderAdapter` and concrete adapters expose provider name/type, enabled/config state, filters, search, normalize, validation, rate-limit notes, and compliance notes |
-| RentCast or chosen API provider adapter added | pass | `RentCastRentalListingsAdapter` supports city/ZIP query construction and is disabled unless configured |
-| Missing API key handled gracefully | pass | RentCast returns `not_configured` provider metadata and discovery runs are recorded as skipped without network calls |
+| Chosen API/feed provider adapter added | pass | `ApprovedJsonApiAdapter` supports a configured user-approved JSON endpoint and is disabled unless a URL is configured |
+| Missing provider config handled gracefully | pass | `approved_json_api` returns `not_configured` provider metadata and discovery runs are recorded as skipped without network calls |
 | Mock discovery provider works | pass | `mock` provider imports local Orange County demo candidates without credentials and is available through the dashboard/API |
 | Discovery run model added | pass | `DiscoveryRun` tracks provider, criteria snapshot, dry/import mode, counts, warnings, errors, candidate preview, and listing IDs |
 | Discovery endpoints added | pass | `GET /api/discovery/providers`, `POST /api/discovery/run`, `GET /api/discovery/runs`, and `GET /api/discovery/runs/{id}` |
@@ -22,9 +22,9 @@ Audit date: 2026-05-07
 | Deduplication improved | pass | Exact URL and source listing ID update existing listings; possible duplicates are flagged by address, address + price, or title + city + price |
 | Backyard/garage extraction applied to discovered listings | pass | Provider normalization parses explicit fields plus description/parking/raw text and imports weak evidence as review-needed |
 | Dashboard discovery UI added | pass | Automatic Discovery panel includes provider status cards, saved-search selector, Run Discovery, Mock Discovery, warnings, run history, counts, and discovery filters |
-| Provider config docs added | pass | `README.md`, `DISCOVERY.md`, `AUTOMATIC_LISTING_DISCOVERY.md`, `.env.example`, `DATA_SOURCES.md`, and `SCRAPING_POLICY.md` document RentCast and placeholder env vars |
+| Provider config docs added | pass | `README.md`, `DISCOVERY.md`, `AUTOMATIC_LISTING_DISCOVERY.md`, `.env.example`, `DATA_SOURCES.md`, and `SCRAPING_POLICY.md` document the approved JSON API adapter and placeholder env vars |
 | Tests added/updated | pass | `tests/test_listing_discovery.py` and `tests/test_saved_searches.py` cover provider interface, mock discovery, runs, saved searches, dedupe, missing keys, and extraction |
-| README updated | pass | README documents discovery providers, mock discovery, RentCast setup, saved-search endpoints, dedupe, inference, and unsupported scraping claims |
+| README updated | pass | README documents discovery providers, mock discovery, approved JSON API setup, saved-search endpoints, dedupe, inference, and unsupported scraping claims |
 
 ## Additional Evidence
 
@@ -46,7 +46,7 @@ Audit date: 2026-05-07
 - `app/discovery/providers/apify_placeholder.py`
 - `app/discovery/providers/brightdata_placeholder.py`
 - `app/discovery/providers/mock_provider.py`
-- `app/discovery/providers/rentcast.py`
+- `app/discovery/providers/approved_json_api.py`
 - `app/discovery/service.py`
 - `app/services/deduplication_service.py`
 - `app/services/discovery_run_service.py`
@@ -101,12 +101,13 @@ git diff --check
 - `node --check static/js/app.js`: passed.
 - `uv run python run_local.py --check`: passed and resolved database/backup/log paths.
 - `git diff --check`: passed.
+- Post-RentCast-removal check: `uv run pytest tests/test_listing_discovery.py tests/test_saved_searches.py -q` returned 12 passed.
 
 ## Live Smoke Results
 
 - Restarted the local server on `http://127.0.0.1:8000`.
 - `GET /`: returned HTTP 200.
-- `GET /api/discovery/providers`: returned `mock`, `approved_demo_feed`, `rentcast`, `apify`, and `brightdata` with correct configured/placeholder states.
+- `GET /api/discovery/providers`: returned `mock`, `approved_demo_feed`, `approved_json_api`, `apify`, and `brightdata` with correct configured/placeholder states.
 - `GET /api/saved-searches`: returned `Orange County 3BR Yard + Garage` with the required city list.
 - `POST /api/discovery/run` with `{"provider_keys":["mock"],"limit":2,"dry_run":true,"import_results":false}`: created dry-run `discovery_run_id=3` with 2 candidate previews.
 - `GET /api/discovery/runs/3`: returned the criteria snapshot and candidate preview.
@@ -114,6 +115,8 @@ git diff --check
 - `GET /api/listings?discovery_only=true`: returned 2 listings linked to `discovery_run_id=4`.
 - `GET /api/export/full.json`: returned 5 discovery providers, 4 discovery runs, and listings with `discovery_run_id`.
 - Final current-code smoke after restart: `POST /api/discovery/run` with `{"provider_keys":["mock"],"limit":1,"dry_run":false,"import_results":true}` completed run `discovery_run_id=5`, updated 1 listing, and the immediate API response included `discovery_run_id=5` in both the listing field and raw payload.
+- Post-RentCast-removal smoke: `GET /api/discovery/providers` returned `apify`, `approved_demo_feed`, `approved_json_api`, `brightdata`, and `mock`; `rentcast` was absent.
+- `POST /api/discovery/run` with `{"provider_keys":["approved_json_api"],"limit":1}` returned a skipped run with the expected `RENTAL_DASHBOARD_PROVIDER_API_URL` configuration message.
 
 Smoke commands used:
 
@@ -133,7 +136,7 @@ curl http://127.0.0.1:8000/api/export/full.json
 
 ## Residual Risks
 
-- RentCast calls require a real account/key to verify against the live provider API.
+- The generic approved JSON API adapter requires a real reviewed endpoint to verify external provider behavior.
 - Mock and approved local feed data are demo data, not live market coverage.
 - Apify and Bright Data are placeholders only and must not be treated as implemented.
 - Existing code still emits `datetime.utcnow()` deprecation warnings under Python 3.13.

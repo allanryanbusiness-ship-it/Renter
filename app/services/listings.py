@@ -103,13 +103,13 @@ SOURCE_CATALOG = [
         "compliance_notes": "Local mock automatic discovery provider; no external calls.",
     },
     {
-        "name": "RentCast",
+        "name": "Approved JSON Provider API",
         "kind": "provider_api",
-        "adapter_key": "rentcast",
+        "adapter_key": "approved_json_api",
         "status": "available",
-        "base_url": "https://api.rentcast.io/v1/listings/rental/long-term",
+        "base_url": None,
         "enabled_by_default": False,
-        "compliance_notes": "Provider API adapter; requires user's API key and explicit enablement.",
+        "compliance_notes": "Generic approved JSON API adapter; configure only for reviewed provider/feed endpoints.",
     },
     {
         "name": "Apify Placeholder",

@@ -57,7 +57,7 @@ Use absolute paths for long-lived daily data. Relative paths work, but absolute 
 From the dashboard:
 
 1. Open `Automatic Discovery`.
-2. Leave `Approved Demo Provider Feed` selected, or select a configured provider API.
+2. Use `Mock Discovery`, leave `Approved Demo Provider Feed` selected, or select a configured approved JSON provider API.
 3. Use `Dry run only` if you want to preview candidates without importing.
 4. Click `Run Discovery`.
 5. Review imported listings, possible duplicate warnings, and score explanations in the deal queue.
@@ -70,7 +70,7 @@ curl -X POST http://127.0.0.1:8000/api/discovery/run \
   -d '{"provider_keys":["approved_demo_feed"],"limit":25}'
 ```
 
-RentCast requires `RENTAL_DASHBOARD_RENTCAST_ENABLED=true` and `RENTAL_DASHBOARD_RENTCAST_API_KEY`. See [AUTOMATIC_LISTING_DISCOVERY.md](AUTOMATIC_LISTING_DISCOVERY.md).
+Configured provider API discovery uses `RENTAL_DASHBOARD_PROVIDER_API_URL` and optional `RENTAL_DASHBOARD_PROVIDER_API_KEY`. See [AUTOMATIC_LISTING_DISCOVERY.md](AUTOMATIC_LISTING_DISCOVERY.md).
 
 ## Backup Workflow
 

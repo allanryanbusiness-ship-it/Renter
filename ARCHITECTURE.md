@@ -22,7 +22,7 @@
 
 - `base.py` documents the provider adapter contract required by discovery integrations.
 - `adapters.py` exposes approved/provider-based discovery adapters.
-- `providers/` re-exports the mock, RentCast, Apify placeholder, and Bright Data placeholder adapters.
+- `providers/` re-exports the mock, approved JSON API, Apify placeholder, and Bright Data placeholder adapters.
 - `service.py` provides package-level aliases for discovery orchestration.
 - `persistence.py` persists discovery provider metadata and discovery run audit rows.
 - The package boundary keeps discovery orchestration separate from manual, CSV, paste, URL, and browser-clip ingestion.

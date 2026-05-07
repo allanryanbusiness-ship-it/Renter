@@ -40,7 +40,7 @@ Adapters return normalized listings using the app's canonical schema. Imported l
 |---|---|---|---|---|
 | `mock` | Mock Discovery Provider | No | No | Local demo candidates; dashboard `Mock Discovery` button uses this path |
 | `approved_demo_feed` | Approved Demo Provider Feed | Yes | No | Local JSON provider-style feed |
-| `rentcast` | RentCast | No | Yes | Real provider API adapter, gracefully skipped when no key is configured |
+| `approved_json_api` | Approved JSON Provider API | No | Optional | Generic adapter for a user-approved JSON feed/API; skipped when no URL is configured |
 | `apify` | Apify Placeholder | No | Yes | Disabled placeholder, not implemented |
 | `brightdata` | Bright Data Placeholder | No | Yes | Disabled placeholder, not implemented |
 
@@ -68,18 +68,15 @@ curl http://127.0.0.1:8000/api/saved-searches
 
 ## Configuration
 
-RentCast:
+Approved JSON provider/feed API:
 
 ```bash
-export RENTAL_DASHBOARD_RENTCAST_ENABLED=true
-export RENTCAST_API_KEY=your_key_here
+export RENTAL_DASHBOARD_PROVIDER_API_URL=https://your-approved-provider.example/listings
+export RENTAL_DASHBOARD_PROVIDER_API_KEY=your_optional_key
+export RENTAL_DASHBOARD_PROVIDER_API_NAME="Approved Property Feed"
 ```
 
-Accepted alias:
-
-```bash
-export RENTAL_DASHBOARD_RENTCAST_API_KEY=your_key_here
-```
+The endpoint may return a JSON array or an object with `listings`, `results`, or `data`.
 
 Future placeholders:
 
@@ -104,8 +101,8 @@ Do not store API keys in frontend files, tests, docs, or committed config.
 
 | Symptom | Check |
 |---|---|
-| No real provider appears enabled | Confirm API key env vars are set before starting the app |
-| RentCast run is skipped | Confirm `RENTAL_DASHBOARD_RENTCAST_ENABLED=true` and `RENTCAST_API_KEY` or `RENTAL_DASHBOARD_RENTCAST_API_KEY` |
+| No real provider appears enabled | Confirm `RENTAL_DASHBOARD_PROVIDER_API_URL` is set before starting the app |
+| Approved JSON API run is skipped | Confirm the URL points to a reviewed provider/feed endpoint that returns JSON listing records |
 | Candidates import as needs review | Backyard or garage evidence is missing/weak and must be verified |
 | Duplicate warnings appear | Review possible duplicate listing IDs before contacting or touring |
 | Mock discovery imports existing listings | Exact URL/source listing ID dedupe updated existing demo records instead of creating duplicates |
